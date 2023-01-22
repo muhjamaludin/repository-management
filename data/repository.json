@@ -1,0 +1,58 @@
+{
+  "remotes": [
+    {
+      "id": 1,
+      "text": "github",
+      "link": "https://github.com/"
+    },
+    {
+      "id": 2,
+      "text": "gitlab",
+      "link": "https://gitlab.com/"
+    },
+    {
+      "id": 3,
+      "text": "bitbucket",
+      "link": "https://bitbucket.org/"
+    }
+  ],
+  "publicities": [
+    {
+      "id": "1",
+      "text": "public"
+    },
+    {
+      "id": "2",
+      "text": "private"
+    },
+    {
+      "id": "3",
+      "text": "private - groups"
+    },
+    {
+      "id": "4",
+      "text": "work"
+    },
+    {
+      "id": "5",
+      "text": "fork"
+    }
+  ],
+  "status": [
+    {
+      "id": "1",
+      "text": "active",
+      "description": "active maintained and developing"
+    },
+    {
+      "id": "2",
+      "text": "archive",
+      "description": "long time not develope or maintained"
+    },
+    {
+      "id": "3",
+      "text": "deleted",
+      "description": "the source is not available anymore"
+    }
+  ]
+}

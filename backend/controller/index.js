@@ -1,5 +1,6 @@
-const { getAllRepositories } = require("./repositories");
+const { getAllRepositories, addRepository } = require("./repositories");
 
 module.exports = {
   getAllRepositories,
+  addRepository,
 };
