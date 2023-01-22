@@ -44,4 +44,31 @@ module.exports = {
       });
     });
   },
+  checkNameAndLink: () => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT COUNT(*) AS total FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE table_name = '${table}' 
+        AND table_schema = '${db_name}' 
+        AND column_name = 'name' OR column_name = 'link';
+      `;
+      conn.query(sql, (err, rows, fields) => {
+        if (err) reject(err);
+        resolve(rows);
+      });
+    });
+  },
+  addNameAndLink: () => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        ALTER TABLE ${table}
+        ADD COLUMN name VARCHAR(50) NOT NULL AFTER id,
+        ADD COLUMN link VARCHAR(100) AFTER remote
+      `;
+      conn.query(sql, (err, rows, fields) => {
+        if (err) reject(err);
+        resolve(rows);
+      });
+    });
+  },
 };

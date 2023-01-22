@@ -1,4 +1,10 @@
-const { checkCreatedAt, repository, addCreatedAt } = require("./index");
+const {
+  checkCreatedAt,
+  repository,
+  addCreatedAt,
+  checkNameAndLink,
+  addNameAndLink,
+} = require("./index");
 
 module.exports = {
   migrate: async (req, res) => {
@@ -12,6 +18,10 @@ module.exports = {
       const checkCreated = await checkCreatedAt();
       if (!checkCreated[0].total) {
         await addCreatedAt();
+      }
+      const checkNameLink = await checkNameAndLink();
+      if (!checkNameLink[0].total) {
+        await addNameAndLink();
       }
       if (repo) {
         res.status(201).send({
