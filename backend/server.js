@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const migrate = require("./migrations/Routes");
+const repo = require("./routes/repositories");
 
 const PORT = process.env.APP_PORT || 9011;
 const app = express();
@@ -8,9 +9,7 @@ const app = express();
 app.use(express.json());
 
 app.use("/schema/migrations", migrate);
-app.use("/api/repositories", (req, res) => {
-  res.send("rep");
-});
+app.use("/api/repositories", repo);
 
 app.use("*", (req, res) => {
   res.status(404).send({
