@@ -4,6 +4,7 @@ const {
   getRepoById,
   updateRepository,
   deleteRepository,
+  countRepositories,
 } = require("./repositories");
 
 module.exports = {
@@ -12,4 +13,5 @@ module.exports = {
   getRepoById,
   updateRepository,
   deleteRepository,
+  countRepositories,
 };

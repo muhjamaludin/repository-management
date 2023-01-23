@@ -4,9 +4,27 @@ const dataRepositories = require("../../data/repository.json");
 module.exports = {
   getAllRepositories: async (req, res) => {
     try {
-      const allRepositories = await models.getAllRepositories();
+      let { page, perpage, search, sort } = req.query;
+      page = parseInt(page) || 1;
+      perpage = parseInt(perpage) || 5;
+      search = search || { name: "" };
+      sort = sort || { id: 1 };
+      const params = { page, perpage, search, sort };
+
+      if (Object.keys(sort).length > 1)
+        throw new Error("Only one sort at once a time");
+
+      const allRepositories = await models.getAllRepositories(params);
+      const total = await models.countRepositories(params);
       const data = {
         message: "success get all repositories",
+        meta: {
+          total: total[0].total,
+          page,
+          perpage,
+          search,
+          sort,
+        },
         data: allRepositories,
       };
       res.status(200).send(data);
@@ -22,7 +40,6 @@ module.exports = {
       if (checkBody.status != "oke") throw new Error(checkBody);
 
       const insertData = await models.addRepository(checkBody.body);
-      console.log(insertData);
       if (insertData) {
         res.status(201).send({
           message: "success insert new repository",
