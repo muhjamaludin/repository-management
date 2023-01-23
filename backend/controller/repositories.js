@@ -34,6 +34,28 @@ module.exports = {
       });
     }
   },
+  updateRepository: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const checkId = await models.getRepoById(id);
+      if (!checkId.length) throw new Error("repo not found!");
+
+      const checkBody = rawBodyRepoValidation(req.body);
+      if (checkBody.status != "oke") throw new Error(checkBody);
+      checkBody.body.push(id);
+
+      const updateData = await models.updateRepository(checkBody.body);
+      if (updateData) {
+        res.status(200).send({
+          message: "success updating data",
+        });
+      }
+    } catch (err) {
+      res.status(400).send({
+        message: err.message,
+      });
+    }
+  },
 };
 
 function rawBodyRepoValidation(body = {}) {
