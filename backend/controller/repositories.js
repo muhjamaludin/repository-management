@@ -56,6 +56,24 @@ module.exports = {
       });
     }
   },
+  deleteRepository: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const checkId = await models.getRepoById(id);
+      if (!checkId.length) throw new Error("repo not found!");
+
+      const updateData = await models.deleteRepository(id);
+      if (updateData) {
+        res.status(200).send({
+          message: "success deleting data",
+        });
+      }
+    } catch (err) {
+      res.status(400).send({
+        message: err.message,
+      });
+    }
+  },
 };
 
 function rawBodyRepoValidation(body = {}) {

@@ -41,4 +41,13 @@ module.exports = {
       });
     });
   },
+  deleteRepository: (id) => {
+    return new Promise((resolve, reject) => {
+      const sql = `DELETE FROM ${table} WHERE id = ?`;
+      conn.query(sql, [id], (err, rows, fields) => {
+        if (err) reject(err);
+        resolve(rows.affectedRows);
+      });
+    });
+  },
 };
