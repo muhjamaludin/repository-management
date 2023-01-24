@@ -20,8 +20,14 @@ module.exports = {
     return new Promise((resolve, reject) => {
       let sql = `SELECT COUNT(*) AS total FROM (`;
       let sql2 = `SELECT id FROM ${table} WHERE 1+1`;
+      let newSql = "";
+      let sqlParams = "";
 
-      const { newSql, sqlParams } = searchSortPagination(params);
+      if (params.search.name) {
+        newSql = searchSortPagination(params).newSql;
+        sqlParams = searchSortPagination(params).sqlParams;
+      }
+
       sql2 += newSql;
       sql += sql2 + ") repo;";
 
