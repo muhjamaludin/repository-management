@@ -18,10 +18,12 @@ module.exports = {
   },
   countRepositories: (params = {}) => {
     return new Promise((resolve, reject) => {
-      let sql = `SELECT COUNT(*) AS total FROM ${table} WHERE 1+1`;
+      let sql = `SELECT COUNT(*) AS total FROM (`;
+      let sql2 = `SELECT id FROM ${table} WHERE 1+1`;
 
       const { newSql, sqlParams } = searchSortPagination(params);
-      sql += newSql;
+      sql2 += newSql;
+      sql += sql2 + ") repo;";
 
       conn.query(sql, sqlParams, (err, rows, fields) => {
         if (err) reject(err);

@@ -1,5 +1,5 @@
 const models = require("../models/index");
-const dataRepositories = require("../../data/repository.json");
+const dataRepositories = require("../data/repository.json");
 
 module.exports = {
   getAllRepositories: async (req, res) => {
