@@ -19,8 +19,9 @@ function Home() {
   const [repos, setRepos] = useState([]);
   const [metaPage, setMetaPage] = useState({});
   const [searchKey, setSearchKey] = useState("name");
-  const [typeSearch, setTypeSearch] = useState(true);
+  const [typeSearch, setTypeSearch] = useState(1);
   const [searchSelects, setSearchSelects] = useState([]);
+  const [sortState, setSortState] = useState(1);
 
   const remotes = dataRepository.remotes;
   const statuses = dataRepository.status;
@@ -30,12 +31,17 @@ function Home() {
     const perpage = params.perpage || 10;
     const page = params.page || 1;
     const search = params.search || { name: "" };
-    const keyFromSearch = Object.keys(search)[0];
+    const sort = params.sort || { id: 1 };
 
+    const keyFromSearch = Object.keys(search)[0];
+    const sortKey = Object.keys(sort)[0];
+
+    const url = `${backendUrl}/api/repositories`;
+    const limitation = `page=${page}&perpage=${perpage}`;
+    const searchParams = `search[${keyFromSearch}]=${search[keyFromSearch]}`;
+    const sortParams = `sort[${sortKey}]=${sortState}`;
     return axios
-      .get(
-        `${backendUrl}/api/repositories?page=${page}&perpage=${perpage}&search[${keyFromSearch}]=${search[keyFromSearch]}`
-      )
+      .get(`${url}?${limitation}&${searchParams}&${sortParams}`)
       .then((resp) => {
         setRepos(resp.data);
         setMetaPage(resp.data.meta);
@@ -54,6 +60,16 @@ function Home() {
     const params = metaPage;
     params.page = e;
     fetchData(params);
+  };
+
+  const onChangeSort = (e) => {
+    const params = metaPage;
+    params.sort = {};
+    setSortState(sortState === 1 ? 0 : 1);
+    params.sort[e.target.value] = sortState;
+    fetchData(params);
+
+    e.preventDefault();
   };
 
   const onChangeSearchKey = (e) => {
@@ -78,6 +94,7 @@ function Home() {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
@@ -146,9 +163,22 @@ function Home() {
                     .map((repo, i) => {
                       return (
                         <th key={i}>
-                          {repo !== "id"
-                            ? repo.charAt(0).toUpperCase() + repo.slice(1)
-                            : "No"}
+                          {repo !== "id" ? (
+                            <button
+                              style={{
+                                outline: "none",
+                                border: "none",
+                                background: "none",
+                                fontWeight: "bold",
+                              }}
+                              onClick={onChangeSort}
+                              value={repo}
+                            >
+                              {repo.charAt(0).toUpperCase() + repo.slice(1)}
+                            </button>
+                          ) : (
+                            "No"
+                          )}
                         </th>
                       );
                     })}
