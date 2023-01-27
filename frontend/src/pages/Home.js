@@ -5,14 +5,22 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
+  Form,
+  Label,
+  Input,
 } from "reactstrap";
 import axios from "axios";
 import Header from "../components/Header";
 import dataRepository from "../data/repository.json";
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
 function Home() {
   const [repos, setRepos] = useState([]);
   const [metaPage, setMetaPage] = useState({});
+  const [searchKey, setSearchKey] = useState("name");
+  const [typeSearch, setTypeSearch] = useState(true);
+  const [searchSelects, setSearchSelects] = useState([]);
 
   const remotes = dataRepository.remotes;
   const statuses = dataRepository.status;
@@ -21,9 +29,12 @@ function Home() {
   const fetchData = (params = {}) => {
     const perpage = params.perpage || 10;
     const page = params.page || 1;
+    const search = params.search || { name: "" };
+    const keyFromSearch = Object.keys(search)[0];
+
     return axios
       .get(
-        `http://localhost:9010/api/repositories?page=${page}&perpage=${perpage}`
+        `${backendUrl}/api/repositories?page=${page}&perpage=${perpage}&search[${keyFromSearch}]=${search[keyFromSearch]}`
       )
       .then((resp) => {
         setRepos(resp.data);
@@ -45,6 +56,26 @@ function Home() {
     fetchData(params);
   };
 
+  const onChangeSearchKey = (e) => {
+    const searchWithSelects = ["remote", "publicity", "status"];
+    if (searchWithSelects.includes(e.target.value)) {
+      if (e.target.value === "remote") setSearchSelects(remotes);
+      if (e.target.value === "publicity") setSearchSelects(publicities);
+      if (e.target.value === "status") setSearchSelects(statuses);
+      setTypeSearch(false);
+    } else {
+      setTypeSearch(true);
+    }
+    setSearchKey(e.target.value);
+  };
+
+  const onChangeSearchValue = (e) => {
+    const params = metaPage;
+    params.search = {};
+    params.search[searchKey] = e.target.value;
+    fetchData(params);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -52,61 +83,116 @@ function Home() {
     <>
       <div className="container">
         <Header />
-        <h2 className="mb-2">Table Repositories</h2>
-        <div className="d-flex flex-row-reverse">
+        <h2 className="mb-3">Table Repositories</h2>
+        <div className="d-flex justify-content-between">
+          <Form className="d-flex justify-content-around">
+            <Label
+              for="exampleSelect"
+              style={{
+                marginRight: "1em",
+                marginLeft: "3em",
+                fontWeight: "bold",
+                color: "GrayText",
+              }}
+            >
+              Search by
+            </Label>
+            <Input
+              name="select"
+              type="select"
+              style={{ width: "10em" }}
+              onChange={onChangeSearchKey}
+            >
+              <option value="name">Name</option>
+              <option value="link">Link</option>
+              <option value="remote">Remote</option>
+              <option value="publicity">Publicity</option>
+              <option value="status">Status</option>
+              <option value="description">Description</option>
+            </Input>
+            {typeSearch ? (
+              <Input
+                type="text"
+                bsSize="sm"
+                style={{ width: "10em", marginLeft: "1em" }}
+                onChange={onChangeSearchValue}
+              />
+            ) : (
+              <Input
+                name="select"
+                type="select"
+                style={{ width: "10em", marginLeft: "1em" }}
+                onChange={onChangeSearchValue}
+              >
+                {searchSelects.map((s, i) => {
+                  return (
+                    <option key={i} value={s.id}>
+                      {s.text}
+                    </option>
+                  );
+                })}
+              </Input>
+            )}
+          </Form>
           <Button color="success">Add New</Button>
         </div>
-        <Table>
-          <thead>
-            <tr>
+        {repos.data && repos.data.length > 0 ? (
+          <Table>
+            <thead>
+              <tr>
+                {repos.data &&
+                  Object.keys(repos.data[0])
+                    .filter((v) => v !== "createdAt")
+                    .map((repo, i) => {
+                      return (
+                        <th key={i}>
+                          {repo !== "id"
+                            ? repo.charAt(0).toUpperCase() + repo.slice(1)
+                            : "No"}
+                        </th>
+                      );
+                    })}
+              </tr>
+            </thead>
+            <tbody>
               {repos.data &&
-                Object.keys(repos.data[0])
-                  .filter((v) => v !== "createdAt")
-                  .map((repo, i) => {
-                    return (
-                      <th key={i}>
-                        {repo !== "id"
-                          ? repo.charAt(0).toUpperCase() + repo.slice(1)
-                          : "No"}
-                      </th>
-                    );
-                  })}
-            </tr>
-          </thead>
-          <tbody>
-            {repos.data &&
-              repos.data.map((repo, i) => {
-                return (
-                  <tr key={i}>
-                    <td>{metaPage.page * metaPage.perpage - 9 + i}</td>
-                    <td>{repo.name}</td>
-                    <td>
-                      <a href={repo.link} target="_blank" rel="noreferrer">
-                        {repo.link}
-                      </a>
-                    </td>
-                    <td>
-                      {remotes.filter((r) => r.id === repo.remote)[0].text}
-                    </td>
-                    <td>
-                      {
-                        publicities.filter(
-                          (p) => p.id === `${repo.publicity}`
-                        )[0].text
-                      }
-                    </td>
-                    <td>
-                      {
-                        statuses.filter((s) => s.id === `${repo.status}`)[0]
-                          .text
-                      }
-                    </td>
-                    <td>{repo.description}</td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </Table>
+                repos.data.map((repo, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>{metaPage.page * metaPage.perpage - 9 + i}</td>
+                      <td>{repo.name}</td>
+                      <td>
+                        <a href={repo.link} target="_blank" rel="noreferrer">
+                          {repo.link}
+                        </a>
+                      </td>
+                      <td>
+                        {remotes.filter((r) => r.id === repo.remote)[0].text}
+                      </td>
+                      <td>
+                        {
+                          publicities.filter(
+                            (p) => p.id === `${repo.publicity}`
+                          )[0].text
+                        }
+                      </td>
+                      <td>
+                        {
+                          statuses.filter((s) => s.id === `${repo.status}`)[0]
+                            .text
+                        }
+                      </td>
+                      <td>{repo.description}</td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </Table>
+        ) : (
+          <div className="m-5">
+            <h4>No Data Found!</h4>
+          </div>
+        )}
         <div className="d-flex justify-content-between">
           <Pagination>
             <PaginationItem>
