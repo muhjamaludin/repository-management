@@ -1,31 +1,22 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Navbar, NavbarBrand } from "reactstrap";
+import { Navbar, Nav, NavItem, NavLink } from "reactstrap";
 
-function Header() {
+function Header(props) {
   return (
     <>
-      <Navbar color="secondary" className="d-flex justify-content-start" dark>
-        <NavbarBrand>
-          <Link
-            style={{ outline: "none", color: "black", textDecoration: "none" }}
-            to="/"
-          >
-            Home
-          </Link>
-
-          <Link
-            style={{
-              outline: "none",
-              color: "black",
-              textDecoration: "none",
-              marginLeft: "1em",
-            }}
-            to="/repo"
-          >
-            Repo
-          </Link>
-        </NavbarBrand>
+      <Navbar color="light" className="d-flex justify-content-start" dark>
+        <Nav pills>
+          <NavItem>
+            <NavLink active={props.active === "/"} href="/">
+              Home
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink active={props.active === "/repo"} href="/repo">
+              Repo
+            </NavLink>
+          </NavItem>
+        </Nav>
       </Navbar>
     </>
   );

@@ -102,7 +102,7 @@ function Repo() {
   return (
     <>
       <div className="container">
-        <Header />
+        <Header active="/repo" />
         <Breadcrumb>
           <BreadcrumbItem>
             <Link to="/">Home</Link>
@@ -209,7 +209,10 @@ function Repo() {
                         </a>
                       </td>
                       <td>
-                        {remotes.filter((r) => r.id === repo.remote)[0].text}
+                        {
+                          remotes.filter((r) => Number(r.id) === repo.remote)[0]
+                            .text
+                        }
                       </td>
                       <td>
                         {

@@ -6,7 +6,7 @@ function Home() {
   return (
     <>
       <div className="container">
-        <Header />
+        <Header active="/" />
         <Breadcrumb>
           <BreadcrumbItem active>Home</BreadcrumbItem>
         </Breadcrumb>
